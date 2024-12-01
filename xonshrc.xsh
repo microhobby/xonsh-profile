@@ -199,13 +199,6 @@ aliases['c'] = 'clear'
 aliases['ls'] = 'ls -lah --color=auto -v'
 aliases['l'] = '/usr/bin/ls --color=auto -v'
 
-# workaround for the code interop on WSL
-def __code(args):
-    cmd = f'"{____code}" {" ".join(args)}'
-    $(env PATH=$_ORIGINAL_PATH bash -c @(cmd))
-
-aliases['code'] = __code
-
 # interop workaround for explorer
 def __explorer(args):
     cmd = f'explorer.exe {" ".join(args)}'
@@ -269,14 +262,16 @@ $_ORIGINAL_PATH = $PATH[:]
 [$PATH.remove(path) for path in $PATH.paths if path.startswith("/mnt/c/")]
 
 # vs code
-____code = "/mnt/c/Users/mpro3/AppData/Local/Programs/Microsoft VS Code/bin/code"
-____code_dir = $(dirname @(____code))
-$PATH.insert(0, ____code_dir)
+if os.environ["HOSTNAME"] != "server":
+    ____code = "/mnt/c/Users/mpro3/AppData/Local/Programs/Microsoft VS Code/bin/code"
+    ____code_dir = $(dirname @(____code))
+    $PATH.insert(0, ____code_dir)
 
 # explorer
-____explorer = "/mnt/c/Windows/explorer.exe"
-____explorer_dir = $(dirname @(____explorer))
-$PATH.insert(0, ____explorer_dir)
+if os.environ["HOSTNAME"] != "server":
+    ____programto = "/mnt/c/Windows/explorer.exe"
+    ____programto_dir = $(dirname @(____programto))
+    $PATH.insert(0, ____programto_dir)
 
 # cmd.exe
 if os.environ["HOSTNAME"] != "server":
@@ -285,6 +280,18 @@ if os.environ["HOSTNAME"] != "server":
         print("You need to run this as administrator")
         $(sudo ln -s /mnt/c/Windows/System32/cmd.exe /usr/local/bin/cmd.exe)
 
+# ipconfig.exe
+if os.environ["HOSTNAME"] != "server":
+    ____programto = "/mnt/c/Windows/System32/ipconfig.exe"
+    ____programto_dir = $(dirname @(____programto))
+    $PATH.insert(0, ____programto_dir)
+
+# powershell.exe
+if os.environ["HOSTNAME"] != "server":
+    ____programto = "/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe"
+    ____programto_dir = $(dirname @(____programto))
+    $PATH.insert(0, ____programto_dir)
+
 # -------------------------------------------------------------------- path
 
 # -------------------------------------------------------------------- powerline
@@ -292,7 +299,7 @@ if os.environ["HOSTNAME"] != "server":
 $PL_EXTRA_SEC = {
     "user": lambda: [
                     f"   {____username} ",
-                    "WHITE",
+                    "#ffffff",
                     "#4e006d"
                 ],
     "git_hash": lambda: [
@@ -302,21 +309,21 @@ $PL_EXTRA_SEC = {
                 ] if _git_hash() else None,
     "cwd": lambda: [
                     f" {_only_last_dirs()} ",
-                    "WHITE",
+                    "#ffffff",
                     "#002f64"
                 ],
     "error": lambda: [
                     " 󰩐 ",
-                    "WHITE",
+                    "#ffffff",
                     "#035500"
                 ] if _last_command_failed() == None else [
                     f"{_last_command_failed()}",
-                    "WHITE",
+                    "#ffffff",
                     "#550000"
                 ],
     "os": lambda: [
                     f' { " " if platform.system() == "Linux" else "󰨡 " } {platform.system()} ',
-                    "WHITE",
+                    "#ffffff",
                     "#00462e"
                 ],
     "branch": lambda: [
