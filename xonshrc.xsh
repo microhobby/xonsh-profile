@@ -11,6 +11,8 @@ import getpass
 import random
 import platform
 import psutil
+import enum
+import json
 
 from git import Repo
 
@@ -38,6 +40,37 @@ os.environ["CASTELLO_SERVER"] = "192.168.0.39"
 os.environ["DROPLET_IP"] = "143.198.182.128"
 os.environ["AWS_SERVER"] = "ec2-3-133-114-116.us-east-2.compute.amazonaws.com"
 os.environ["HOSTNAME"] = socket.gethostname()
+
+# ------------------------------------------------------------------------ utils
+
+class Color(enum.Enum):
+    BLACK = 30
+    RED = 31
+    GREEN = 32
+    YELLOW = 33
+    BLUE = 34
+    MAGENTA = 35
+    CYAN = 36
+    WHITE = 37
+
+class BgColor(enum.Enum):
+    BLACK = 40
+    RED = 41
+    GREEN = 42
+    YELLOW = 43
+    BLUE = 44
+    MAGENTA = 45
+    CYAN = 46
+    WHITE = 47
+
+def _printc(text, color, bgcolor=None):
+    if bgcolor == None:
+        print(f"\033[{color.value}m{text}\033[0m")
+    else:
+        print(f"\033[{color.value};{bgcolor.value}m{text}\033[0m")
+
+
+# ------------------------------------------------------------------------ utils
 
 # -------------------------------------------------------------------- functions
 def find_git_root(start_path):
@@ -253,6 +286,103 @@ def __copy_from_aws(args):
     $(bash -c @(cmd))
 
 aliases['copy-from-aws'] = __copy_from_aws
+
+
+def __recur_registry_search(namespace, results=None, next_page=-1):
+    if results is None:
+        results = []
+
+    if next_page == -1:
+        data = $(curl -s f"https://registry.hub.docker.com/v2/repositories/{namespace}?page_size=100")
+    elif next_page is not None:
+        data = $(curl -s @(next_page))
+
+    data_json = json.loads(data)
+
+    if 'results' in data_json:
+        results.extend(data_json['results'])
+
+    if data_json.get('next') is None:
+        return results
+    else:
+        return __recur_registry_search(namespace, results, data_json['next'])
+
+
+def __recur_tag_search(namespace, image, results=None, next_page=-1):
+    if results is None:
+        results = []
+
+    if next_page == -1:
+        data = $(curl -s f"https://registry.hub.docker.com/v2/repositories/{namespace}/{image}/tags/?page_size=100")
+    elif next_page is not None:
+        data = $(curl -s @(next_page))
+
+    data_json = json.loads(data)
+
+    if 'results' in data_json:
+        results.extend(data_json['results'])
+
+    if data_json.get('next') is None:
+        return results
+    else:
+        return __recur_tag_search(namespace, image, results, data_json['next'])
+
+def __dict_to_string(d):
+    return ', '.join(f"{key}: {value}" for key, value in d.items())
+
+
+def __dockersearch(args):
+    if len(args) < 2:
+        print("Usage: docker-search <namespace> <image> <tag>")
+        return
+
+    namespace = args[0]
+    image = args[1]
+    tag = None
+
+    if len(args) == 3:
+        tag = args[2]
+        print(f"Searching for {namespace}/{image}:{tag} images")
+    else:
+        print(f"Searching for {namespace}/{image} images")
+
+    results = __recur_registry_search(namespace)
+
+    if len(results) == 0:
+        print("No results found")
+        return
+
+    _find = 0
+
+    for result in results:
+        if result['name'] and isinstance(result['name'], str) and image == result['name']:
+                tags = __recur_tag_search(namespace, result['name'])
+
+                for _tag in tags:
+                    if tag is not None and tag != _tag['name']:
+                        continue
+
+                    _find += 1
+
+                    _printc("{", Color.RED)
+
+                    _printc(f"\tNAME={result['name']}", Color.GREEN)
+                    _printc(f"\tTAG={_tag['name']}", Color.CYAN)
+
+                    _printc("\t{", Color.GREEN)
+
+                    for _image in _tag['images']:
+                        _printc(f"\t\tARCH={_image['architecture']}", Color.MAGENTA)
+
+                    _printc("\t}", Color.GREEN)
+                    _printc("}", Color.RED)
+
+    if _find == 0:
+        _printc("No results found", Color.RED)
+
+
+aliases['docker-search'] = __dockersearch
+
 
 # -------------------------------------------------------------------- functions
 
