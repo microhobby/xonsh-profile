@@ -93,6 +93,18 @@ def _git_hash():
     except:
         return None
 
+def _git_summary():
+    try:
+        git_root = find_git_root(os.getcwd())
+
+        if git_root == None:
+            return None
+
+        repo = Repo(git_root)
+        return repo.head.commit.summary[:80]
+    except:
+        return None
+
 def _git_status():
     try:
         git_root = find_git_root(os.getcwd())
@@ -432,15 +444,20 @@ $PL_EXTRA_SEC = {
                     "#ffffff",
                     "#4e006d"
                 ],
+    "git_summary": lambda: [
+                    f" 󰜛 {_git_summary()} ",
+                    "#002f64",
+                    "#ffffff"
+                ] if _git_hash() else None,
     "git_hash": lambda: [
-                    f" {_git_hash()} ",
-                    "BLACK",
-                    "#ffdb0d"
+                    f"  {_git_hash()} ",
+                    "#ffffff",
+                    "#002f64"
                 ] if _git_hash() else None,
     "cwd": lambda: [
                     f" {_only_last_dirs()} ",
                     "#ffffff",
-                    "#002f64"
+                    "#0078ce"
                 ],
     "error": lambda: [
                     " 󰩐 ",
@@ -463,8 +480,8 @@ $PL_EXTRA_SEC = {
                 ] if _git_hash() else None,
     "diff_count": lambda: [
                     f"   {_git_status()} ",
-                    "BLACK",
-                    "#ffdb0d"
+                    "#ffffff",
+                    "#af0000"
                 ] if _git_hash() else None,
     "git_signing_key": lambda: [
                     f"   {_get_git_signing_key()} ",
@@ -478,7 +495,7 @@ $PL_EXTRA_SEC = {
                 ] if __get_process_name_load_more_than_20pc() != None else None,
 }
 
-$PL_PROMPT='git_signing_key>cpu_usage\nos>cwd>branch>diff_count\nerror>git_hash>user'
+$PL_PROMPT='git_signing_key>cpu_usage\nos>cwd>branch>git_hash>git_summary>diff_count\nerror>user'
 $RPL_PROMPT='!'
 $PL_TOOLBAR='!'
 $PL_RPROMPT='!'
