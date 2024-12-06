@@ -482,7 +482,7 @@ $PL_EXTRA_SEC = {
                     f"   {_git_status()} ",
                     "#ffffff",
                     "#af0000"
-                ] if _git_hash() else None,
+                ] if _git_status() > 0 else None,
     "git_signing_key": lambda: [
                     f"   {_get_git_signing_key()} ",
                     "#000000",
