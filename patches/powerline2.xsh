@@ -241,8 +241,15 @@ def prompt_builder(var, right=False, sample=False):
                     if last:
                         p.append('{%s}{%s}%s{%s} ' % (COLOR_TOKEN, sec.bg, $PL_SEP, COLOR_TOKEN))
                     else:
-                        p.append('{BACKGROUND_%s}{%s}%s' % (sections[i+1].bg, sec.bg, $PL_SEP))
+                        if sections[i+1].bg != COLOR_TOKEN:
+                            if sec.bg != COLOR_TOKEN:
+                                p.append('{BACKGROUND_%s}{%s}%s' % (sections[i+1].bg, sec.bg, $PL_SEP))
+                            else:
+                                p.append('{BACKGROUND_%s}{%s}%s' % (sections[i+1].bg, sections[i+1].bg, $PL_SEP))
+                        else:
+                            p.append('{%s}{%s}%s' % (COLOR_TOKEN, sec.bg, $PL_SEP))
             multiline_prompt.append(''.join(p))
+        # print('\n'.join(multiline_prompt))
         return '\n'.join(multiline_prompt)
     return prompt
 

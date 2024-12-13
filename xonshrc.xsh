@@ -446,8 +446,8 @@ $PL_EXTRA_SEC = {
                 ],
     "git_summary": lambda: [
                     f" 󰜛 {_git_summary()} ",
-                    "#002f64",
-                    "#ffffff"
+                    "#b4b0ff",
+                    "RESET"
                 ] if _git_hash() else None,
     "git_hash": lambda: [
                     f"  {_git_hash()} ",
