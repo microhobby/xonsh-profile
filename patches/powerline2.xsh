@@ -236,10 +236,16 @@ def prompt_builder(var, right=False, sample=False):
                     p.append('{%s}%s{BACKGROUND_%s}{%s}%s' % (sec.bg, $PL_RSEP, sec.bg, sec.fg, sec.line))
                 else:
                     if first:
-                        p.append('{BACKGROUND_%s}' % sec.bg)
+                        if sec.bg != COLOR_TOKEN:
+                            p.append('{BACKGROUND_%s}' % sec.bg)
+                        else:
+                            p.append('')
                     p.append('{%s}%s' % (sec.fg, sec.line))
                     if last:
-                        p.append('{%s}{%s}%s{%s} ' % (COLOR_TOKEN, sec.bg, $PL_SEP, COLOR_TOKEN))
+                        if sec.bg != COLOR_TOKEN:
+                            p.append('{%s}{%s}%s{%s} ' % (COLOR_TOKEN, sec.bg, $PL_SEP, COLOR_TOKEN))
+                        else:
+                            p.append('{%s}{%s}%s{%s} ' % (COLOR_TOKEN, sec.bg, "", COLOR_TOKEN))
                     else:
                         if sections[i+1].bg != COLOR_TOKEN:
                             if sec.bg != COLOR_TOKEN:

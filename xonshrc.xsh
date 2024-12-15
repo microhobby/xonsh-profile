@@ -471,7 +471,7 @@ $PL_EXTRA_SEC = {
     "os": lambda: [
                     f' { " " if platform.system() == "Linux" else "󰨡 " } {platform.system()} ',
                     "#ffffff",
-                    "#00462e"
+                    "RESET"
                 ],
     "branch": lambda: [
                     f" 󰊢  {_git_branch()} ",
