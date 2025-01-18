@@ -13,10 +13,18 @@ import platform
 import psutil
 import enum
 import json
+import threading
+from blessed import Terminal
+from prompt_toolkit.keys import Keys
+from prompt_toolkit.filters import Condition
+from prompt_toolkit.application import run_in_terminal
 
 from git import Repo
 
+__term = Terminal()
 ____username = getpass.getuser()
+
+___THREAD_RESULT = None
 
 ERROR_EMOJI = [
     " 󰇸 ",
@@ -36,10 +44,13 @@ ERROR_EMOJI = [
     " 󱕽 "
 ]
 
-os.environ["CASTELLO_SERVER"] = "192.168.0.39"
+os.environ["CASTELLO_SERVER"] = "192.168.0.13"
 os.environ["DROPLET_IP"] = "143.198.182.128"
 os.environ["AWS_SERVER"] = "ec2-3-133-114-116.us-east-2.compute.amazonaws.com"
 os.environ["HOSTNAME"] = socket.gethostname()
+
+# get the tty device and put in the GPG_TTY
+os.environ["GPG_TTY"] = $(tty)
 
 # ------------------------------------------------------------------------ utils
 
@@ -396,6 +407,130 @@ def __dockersearch(args):
 aliases['docker-search'] = __dockersearch
 
 
+def __check_copilot_install(args):
+    ret = $(which gh)
+    if not ret:
+        print(f"{ERROR_EMOJI[0]} GitHub CLI not found, please install it: https://docs.github.com/en/copilot/github-copilot-in-the-cli/using-github-copilot-in-the-cli#prerequisites")
+        return 69
+
+    ret = $(gh extension list)
+    if "copilot" not in ret:
+        print(f"{ERROR_EMOJI[0]} GitHub Copilot not found, please install it: https://docs.github.com/en/copilot/github-copilot-in-the-cli/using-github-copilot-in-the-cli#prerequisites")
+        return 69
+
+@events.on_ptk_create
+def custom_keybindings(bindings, **kw):
+
+    @bindings.add(Keys.ControlE)
+    def __explain_copilot(event):
+        _old_y, _old_x = __term.get_location()
+
+        def ___explain_copilot_thread():
+            _buffer = event.current_buffer.text
+
+            if _buffer == "":
+                return
+
+            def ____explain_robot():
+                global ___THREAD_RESULT
+                ___THREAD_RESULT = $(/home/microhobby/projects/X/xonsh-profile/scripts/ghcopilotE.sh @(_buffer))
+
+            _t_robot = threading.Thread(target=____explain_robot)
+            _t_robot.start()
+            while _t_robot.is_alive():
+                print(__term.move_xy(0, __term.height - 2), end="", flush=True)
+                # clear theline
+                print(__term.clear_eol, end="", flush=True)
+                print(__term.move_xy(0, __term.height - 2), end="", flush=True)
+                print("🤖 : .", end="", flush=True)
+                time.sleep(0.1)
+                print(__term.move_xy(0, __term.height - 2), end="", flush=True)
+                print(__term.clear_eol, end="", flush=True)
+                print(__term.move_xy(0, __term.height - 2), end="", flush=True)
+                print("🤖 : ..", end="", flush=True)
+                time.sleep(0.1)
+                print(__term.move_xy(0, __term.height - 2), end="", flush=True)
+                print(__term.clear_eol, end="", flush=True)
+                print(__term.move_xy(0, __term.height - 2), end="", flush=True)
+                print("🤖 : ...", end="", flush=True)
+                time.sleep(0.1)
+                print(__term.move_xy(0, __term.height - 2), end="", flush=True)
+                print(__term.clear_eol, end="", flush=True)
+                print(__term.move_xy(0, __term.height - 2), end="", flush=True)
+                print("🤖 : ..", end="", flush=True)
+                time.sleep(0.1)
+
+            print(__term.move_xy(_old_x, _old_y), end="", flush=True)
+            print(__term.clear_eol, end="", flush=True)
+            print(___THREAD_RESULT)
+
+        run_in_terminal(___explain_copilot_thread, True)
+
+
+    # @bindings.add(Keys.ControlX)
+    # def __execute_copilot(event):
+
+    #     def ___execute_copilot_thread():
+    #         event.current_buffer.insert_text(___THREAD_RESULT)
+    #         # __xonsh__.execer.exec(___THREAD_RESULT)
+
+    #     run_in_terminal(___execute_copilot_thread, True)
+
+
+    @bindings.add(Keys.F10)
+    def __copilot(event):
+        _old_y, _old_x = __term.get_location()
+
+        # we need to out of the prompter loop
+        # so we can use the terminal
+        def ___copilot_thread():
+            # move the cursor to the bottom of the terminal
+            print(__term.move_xy(0, __term.height - 2), end="", flush=True)
+            print("🤖 : ", end="", flush=True)
+            _input = input().strip()
+
+            # make an animation
+            def ____ask_robot():
+                global ___THREAD_RESULT
+                ___THREAD_RESULT = $(/home/microhobby/projects/X/xonsh-profile/scripts/ghcopilot.sh @(_input)).strip()
+
+            if _input != "":
+                _t_robot = threading.Thread(target=____ask_robot)
+                _t_robot.start()
+
+                while _t_robot.is_alive():
+                    print(__term.move_xy(0, __term.height - 2), end="", flush=True)
+                    # clear theline
+                    print(__term.clear_eol, end="", flush=True)
+                    print(__term.move_xy(0, __term.height - 2), end="", flush=True)
+                    print("🤖 : .", end="", flush=True)
+                    time.sleep(0.1)
+                    print(__term.move_xy(0, __term.height - 2), end="", flush=True)
+                    print(__term.clear_eol, end="", flush=True)
+                    print(__term.move_xy(0, __term.height - 2), end="", flush=True)
+                    print("🤖 : ..", end="", flush=True)
+                    time.sleep(0.1)
+                    print(__term.move_xy(0, __term.height - 2), end="", flush=True)
+                    print(__term.clear_eol, end="", flush=True)
+                    print(__term.move_xy(0, __term.height - 2), end="", flush=True)
+                    print("🤖 : ...", end="", flush=True)
+                    time.sleep(0.1)
+                    print(__term.move_xy(0, __term.height - 2), end="", flush=True)
+                    print(__term.clear_eol, end="", flush=True)
+                    print(__term.move_xy(0, __term.height - 2), end="", flush=True)
+                    print("🤖 : ..", end="", flush=True)
+                    time.sleep(0.1)
+
+                # show to user
+                print(__term.move_xy(_old_x, _old_y), end="", flush=True)
+                event.current_buffer.insert_text(___THREAD_RESULT)
+            else:
+                # only go back the origin
+                print(__term.move_xy(_old_x, _old_y), end="", flush=True)
+
+        run_in_terminal(___copilot_thread, True)
+
+
 # -------------------------------------------------------------------- functions
 
 # -------------------------------------------------------------------- path
@@ -446,7 +581,7 @@ $PL_EXTRA_SEC = {
                 ],
     "git_summary": lambda: [
                     f" 󰜛 {_git_summary()} ",
-                    "#b4b0ff",
+                    "#A875FF",
                     "RESET"
                 ] if _git_hash() else None,
     "git_hash": lambda: [
@@ -470,7 +605,7 @@ $PL_EXTRA_SEC = {
                 ],
     "os": lambda: [
                     f' { " " if platform.system() == "Linux" else "󰨡 " } {platform.system()} ',
-                    "#ffffff",
+                    "#C9C9C9",
                     "RESET"
                 ],
     "branch": lambda: [
@@ -503,3 +638,4 @@ $PL_RPROMPT='!'
 xontrib load powerline2
 
 # -------------------------------------------------------------------- powerline
+$PATH.insert(0, '/home/microhobby/.local/bin')
