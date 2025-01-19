@@ -49,8 +49,12 @@ os.environ["DROPLET_IP"] = "143.198.182.128"
 os.environ["AWS_SERVER"] = "ec2-3-133-114-116.us-east-2.compute.amazonaws.com"
 os.environ["HOSTNAME"] = socket.gethostname()
 
+
+# start the gpg agent
+gpgconf --launch gpg-agent
+
 # get the tty device and put in the GPG_TTY
-os.environ["GPG_TTY"] = $(tty)
+$GPG_TTY = $(tty)
 
 # ------------------------------------------------------------------------ utils
 
@@ -405,6 +409,14 @@ def __dockersearch(args):
 
 
 aliases['docker-search'] = __dockersearch
+
+
+def __zed(args):
+    # /home/microhobby/.local/bin/zed
+    bash -c f"ZED_ALLOW_EMULATED_GPU=1 WAYLAND_DISPLAY='' zed {' '.join(args)}"
+
+
+aliases['zed'] = __zed
 
 
 def __check_copilot_install(args):
