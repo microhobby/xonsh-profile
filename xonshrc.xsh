@@ -44,7 +44,7 @@ ERROR_EMOJI = [
     " 󱕽 "
 ]
 
-os.environ["CASTELLO_SERVER"] = "192.168.0.13"
+os.environ["CASTELLO_SERVER"] = "192.168.0.24"
 os.environ["DROPLET_IP"] = "143.198.182.128"
 os.environ["AWS_SERVER"] = "ec2-3-133-114-116.us-east-2.compute.amazonaws.com"
 os.environ["HOSTNAME"] = socket.gethostname()
@@ -419,6 +419,68 @@ def __zed(args):
 aliases['zed'] = __zed
 
 
+def __torizon_dev_update(args):
+    $_COMPOSE_FILE = f"{os.environ['HOME']}/.tcd/docker-compose.yml"
+    $_BASH_COMPLETION_FILE = f"{os.environ['HOME']}/.tcd/torizon-dev-completion.bash"
+    $APOLLOX_REPO = "torizon/vscode-torizon-templates"
+    $APOLLOX_BRANCH = "dev"
+    $BRANCH = "dev"
+    $UUID = $(id -u)
+    $DGID = $(getent group docker | cut -d: -f3)
+
+    print("Pulling the torizon-dev image ...")
+    # we pull everytime we source it to get updates
+    docker \
+        compose \
+        -f $_COMPOSE_FILE \
+        pull torizon-dev
+
+
+aliases['torizon-dev-update'] = __torizon_dev_update
+
+
+def __torizon_dev(args):
+    # the torizon-dev-completion.bash was copied to
+    # /usr/share/bash-completion/completions/torizon-dev
+    # so we can use the bash completion
+    $_COMPOSE_FILE = f"{os.environ['HOME']}/.tcd/docker-compose.yml"
+    $_BASH_COMPLETION_FILE = f"{os.environ['HOME']}/.tcd/torizon-dev-completion.bash"
+    $APOLLOX_REPO = "torizon/vscode-torizon-templates"
+    $APOLLOX_BRANCH = "dev"
+    $BRANCH = "dev"
+    $UUID = $(id -u)
+    $DGID = $(getent group docker | cut -d: -f3)
+
+    myhash = $(echo -n @(os.getcwd()) | openssl dgst -sha256 | sed 's/^.* //').strip()
+    $SHA_DIR = myhash
+    container_id = $(docker ps -aq -f name=@(f"torizon-dev-{myhash}"))
+
+    if container_id != "":
+        docker start @(f'torizon-dev-{myhash}') > /dev/null
+    else:
+        _workspace = os.path.basename(os.getcwd())
+        print(f"Configuring environment for the [{_workspace}] workspace ...")
+        print("Please wait ...")
+
+        docker compose \
+            -f $_COMPOSE_FILE \
+            run \
+            --entrypoint /bin/bash \
+            --name @(f"torizon-dev-{myhash}") \
+            --user root \
+            -d torizon-dev > /dev/null
+
+        docker exec -it --user root @(f"torizon-dev-{myhash}") usermod -u $UUID torizon
+        docker exec -it --user root @(f"torizon-dev-{myhash}") groupadd -g $DGID docker
+        docker exec -it --user root @(f"torizon-dev-{myhash}") usermod -aG $DGID torizon
+        docker exec -it --user root @(f"torizon-dev-{myhash}") chown -R torizon:torizon /home/torizon
+
+    docker exec -it --user torizon @(f"torizon-dev-{myhash}") zygote @(args)
+
+
+aliases['torizon-dev'] = __torizon_dev
+
+
 def __check_copilot_install(args):
     ret = $(which gh)
     if not ret:
@@ -541,6 +603,15 @@ def custom_keybindings(bindings, **kw):
                 print(__term.move_xy(_old_x, _old_y), end="", flush=True)
 
         run_in_terminal(___copilot_thread, True)
+
+
+def __vscode_git_fixups(args):
+    # fix the vscode max file watchers
+    echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf
+    sudo sysctl -p
+
+
+aliases['vscode-git-fixups'] = __vscode_git_fixups
 
 
 # -------------------------------------------------------------------- functions
