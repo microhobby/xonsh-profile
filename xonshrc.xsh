@@ -256,6 +256,7 @@ aliases['gti'] = 'git init'
 aliases['gtck'] = _gtck
 
 aliases['c'] = 'clear'
+aliases['C'] = 'clear'
 aliases['ls'] = 'ls -lah --color=auto -v'
 aliases['l'] = '/usr/bin/ls --color=auto -v'
 
