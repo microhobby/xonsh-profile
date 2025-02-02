@@ -56,6 +56,11 @@ gpgconf --launch gpg-agent
 # get the tty device and put in the GPG_TTY
 $GPG_TTY = $(tty)
 
+##
+# Define the theme variant
+##
+$THEME_VARIANT = "light"
+
 # ------------------------------------------------------------------------ utils
 
 class Color(enum.Enum):
@@ -722,4 +727,4 @@ $PL_RPROMPT='!'
 xontrib load powerline2
 
 # -------------------------------------------------------------------- powerline
-$PATH.insert(0, '/home/microhobby/.local/bin')
+$PATH.insert(0, f"/home/{os.environ['HOME']}/.local/bin")
