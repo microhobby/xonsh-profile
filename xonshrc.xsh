@@ -268,8 +268,14 @@ aliases['l'] = '/usr/bin/ls --color=auto -v'
 
 # interop workaround for explorer
 def __explorer(args):
-    cmd = f'explorer.exe {" ".join(args)}'
+    if "WSL_DISTRO_NAME" in os.environ:
+        cmd = f'explorer.exe {" ".join(args)}'
+
+    if platform.system() == "Darwin":
+        cmd = f'open {" ".join(args)}'
+
     $(bash -c @(cmd))
+
 
 aliases['explorer'] = __explorer
 
@@ -628,33 +634,34 @@ aliases['vscode-git-fixups'] = __vscode_git_fixups
 $_ORIGINAL_PATH = $PATH[:]
 [$PATH.remove(path) for path in $PATH.paths if path.startswith("/mnt/c/")]
 
+# WARN: this only make sense for WSL
 # vs code
-if os.environ["HOSTNAME"] != "server":
+if "WSL_DISTRO_NAME" in os.environ:
     ____code = "/mnt/c/Users/mpro3/AppData/Local/Programs/Microsoft VS Code/bin/code"
     ____code_dir = $(dirname @(____code))
     $PATH.insert(0, ____code_dir)
 
 # explorer
-if os.environ["HOSTNAME"] != "server":
+if "WSL_DISTRO_NAME" in os.environ:
     ____programto = "/mnt/c/Windows/explorer.exe"
     ____programto_dir = $(dirname @(____programto))
     $PATH.insert(0, ____programto_dir)
 
 # cmd.exe
-if os.environ["HOSTNAME"] != "server":
+if "WSL_DISTRO_NAME" in os.environ:
     if not os.path.exists("/usr/local/bin/cmd.exe"):
         print("Creating symlink for cmd.exe")
         print("You need to run this as administrator")
         $(sudo ln -s /mnt/c/Windows/System32/cmd.exe /usr/local/bin/cmd.exe)
 
 # ipconfig.exe
-if os.environ["HOSTNAME"] != "server":
+if "WSL_DISTRO_NAME" in os.environ:
     ____programto = "/mnt/c/Windows/System32/ipconfig.exe"
     ____programto_dir = $(dirname @(____programto))
     $PATH.insert(0, ____programto_dir)
 
 # powershell.exe
-if os.environ["HOSTNAME"] != "server":
+if "WSL_DISTRO_NAME" in os.environ:
     ____programto = "/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe"
     ____programto_dir = $(dirname @(____programto))
     $PATH.insert(0, ____programto_dir)
