@@ -60,6 +60,7 @@ $GPG_TTY = $(tty)
 # Define the theme variant
 ##
 $THEME_VARIANT = "light"
+_THEME_VARIANT = "light"
 
 # ------------------------------------------------------------------------ utils
 
@@ -670,7 +671,7 @@ $PL_EXTRA_SEC = {
                 ],
     "git_summary": lambda: [
                     f" 󰜛 {_git_summary()} ",
-                    "#A875FF",
+                    "#A875FF" if _THEME_VARIANT == "dark" else "#4F17B0",
                     "RESET"
                 ] if _git_hash() else None,
     "git_hash": lambda: [
@@ -693,8 +694,8 @@ $PL_EXTRA_SEC = {
                     "#550000"
                 ],
     "os": lambda: [
-                    f' { " " if platform.system() == "Linux" else "󰨡 " } {platform.system()} ',
-                    "#C9C9C9",
+                    f' { " " if platform.system() == "Linux" else " " if platform.system() == "Darwin" else "󰨡 " } {platform.system()} ',
+                    "#000000" if _THEME_VARIANT == "light" else "#C9C9C9",
                     "RESET"
                 ],
     "branch": lambda: [
