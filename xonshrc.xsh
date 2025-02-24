@@ -61,6 +61,15 @@ $GPG_TTY = $(tty)
 ##
 $THEME_VARIANT = "light"
 _THEME_VARIANT = "light"
+# $THEME_VARIANT = "dark"
+# _THEME_VARIANT = "dark"
+
+_USER_HOME = os.path.expanduser("~")
+
+##
+# code insiders
+##
+aliases['code'] = 'code-insiders'
 
 # ------------------------------------------------------------------------ utils
 
@@ -310,19 +319,19 @@ aliases['copy-from-droplet'] = __copy_from_droplet
 
 def __copy_to_droplet(args):
     args = f'{" ".join(args)}'
-    cmd = f'scp -r {args} root@{os.environ["DROPLET_IP"]}:/home/microhobby'
+    cmd = f'scp -r {args} root@{os.environ["DROPLET_IP"]}:{_USER_HOME}'
     $(bash -c @(cmd))
 
 aliases['copy-to-droplet'] = __copy_to_droplet
 
 def __connect_to_aws():
-    !(ssh -i "/home/microhobby/.ssh/telemetryKeys.pem" "ubuntu@$AWS_SERVER")
+    ssh -i @(f"{_USER_HOME}/.ssh/telemetryKeys.pem") "ubuntu@$AWS_SERVER"
 
 aliases['connect-to-aws'] = __connect_to_aws
 
 def __copy_from_aws(args):
     args = f'{" ".join(args)}'
-    cmd = f'scp -i "/home/microhobby/.ssh/telemetryKeys.pem" "ubuntu@$AWS_SERVER:{args}" .'
+    cmd = f'scp -i "{_USER_HOME}/.ssh/telemetryKeys.pem" "ubuntu@$AWS_SERVER:{args}" .'
     $(bash -c @(cmd))
 
 aliases['copy-from-aws'] = __copy_from_aws
@@ -520,7 +529,7 @@ def custom_keybindings(bindings, **kw):
 
             def ____explain_robot():
                 global ___THREAD_RESULT
-                ___THREAD_RESULT = $(/home/microhobby/projects/X/xonsh-profile/scripts/ghcopilotE.sh @(_buffer))
+                ___THREAD_RESULT = $($HOME/projects/X/xonsh-profile/scripts/ghcopilotE.sh @(_buffer))
 
             _t_robot = threading.Thread(target=____explain_robot)
             _t_robot.start()
@@ -579,7 +588,7 @@ def custom_keybindings(bindings, **kw):
             # make an animation
             def ____ask_robot():
                 global ___THREAD_RESULT
-                ___THREAD_RESULT = $(/home/microhobby/projects/X/xonsh-profile/scripts/ghcopilot.sh @(_input)).strip()
+                ___THREAD_RESULT = $($HOME/projects/X/xonsh-profile/scripts/ghcopilot.sh @(_input)).strip()
 
             if _input != "":
                 _t_robot = threading.Thread(target=____ask_robot)
@@ -726,6 +735,12 @@ $PL_EXTRA_SEC = {
                     "#ffbb00"
                 ] if __get_process_name_load_more_than_20pc() != None else None,
 }
+
+# dark theme
+# $XONSH_STYLE_OVERRIDES['completion-menu'] = 'bg:#282828 #7b7b7b'
+# light theme
+$XONSH_STYLE_OVERRIDES['completion-menu'] = 'bg:#2a2a2a #a76cc9'
+
 
 $PL_PROMPT='git_signing_key>cpu_usage\nos>cwd>branch>git_hash>git_summary>diff_count\nerror>user'
 $RPL_PROMPT='!'
