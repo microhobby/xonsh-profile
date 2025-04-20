@@ -44,7 +44,7 @@ ERROR_EMOJI = [
     " 󱕽 "
 ]
 
-os.environ["CASTELLO_SERVER"] = "192.168.0.24"
+os.environ["CASTELLO_SERVER"] = "192.168.0.52"
 os.environ["DROPLET_IP"] = "143.198.182.128"
 os.environ["AWS_SERVER"] = "ec2-3-133-114-116.us-east-2.compute.amazonaws.com"
 os.environ["HOSTNAME"] = socket.gethostname()
@@ -59,17 +59,17 @@ $GPG_TTY = $(tty)
 ##
 # Define the theme variant
 ##
-$THEME_VARIANT = "light"
-_THEME_VARIANT = "light"
-# $THEME_VARIANT = "dark"
-# _THEME_VARIANT = "dark"
+# $THEME_VARIANT = "light"
+# _THEME_VARIANT = "light"
+$THEME_VARIANT = "dark"
+_THEME_VARIANT = "dark"
 
 _USER_HOME = os.path.expanduser("~")
 
 ##
 # code insiders
 ##
-aliases['code'] = 'code-insiders'
+# aliases['code'] = 'code-insiders'
 
 # ------------------------------------------------------------------------ utils
 
@@ -295,7 +295,7 @@ def __connect_to_server():
         print("OPENING VS CODE")
         # set the dir to the windows path
         os.chdir("/mnt/c/Users/mpro3")
-        cmd = f'cmd.exe /C code --remote ssh-remote+{os.environ["CASTELLO_SERVER"]}'
+        cmd = f'cmd.exe /C code --remote ssh-remote+server'
         $(bash -c @(cmd))
         print("VS CODE")
         time.sleep(3)
@@ -442,19 +442,19 @@ aliases['zed'] = __zed
 
 
 def __torizon_dev_update(args):
-    $_COMPOSE_FILE = f"{os.environ['HOME']}/.tcd/docker-compose.yml"
-    $_BASH_COMPLETION_FILE = f"{os.environ['HOME']}/.tcd/torizon-dev-completion.bash"
-    $APOLLOX_REPO = "torizon/vscode-torizon-templates"
-    $APOLLOX_BRANCH = "dev"
-    $BRANCH = "dev"
-    $UUID = $(id -u)
-    $DGID = $(getent group docker | cut -d: -f3)
+    $__TCD_COMPOSE_FILE = f"{os.environ['HOME']}/.tcd/docker-compose.yml"
+    $__TCD_BASH_COMPLETION_FILE = f"{os.environ['HOME']}/.tcd/torizon-dev-completion.bash"
+    $__TCD_APOLLOX_REPO = "torizon/vscode-torizon-templates"
+    $__TCD_BRANCH = "dev"
+    $__TCD_BRANCH = "dev"
+    $__TCD_UUID = $(id -u)
+    $__TCD_DGID = $(getent group docker | cut -d: -f3)
 
     print("Pulling the torizon-dev image ...")
     # we pull everytime we source it to get updates
     docker \
         compose \
-        -f $_COMPOSE_FILE \
+        -f $__TCD_COMPOSE_FILE \
         pull torizon-dev
 
 
@@ -465,13 +465,13 @@ def __torizon_dev(args):
     # the torizon-dev-completion.bash was copied to
     # /usr/share/bash-completion/completions/torizon-dev
     # so we can use the bash completion
-    $_COMPOSE_FILE = f"{os.environ['HOME']}/.tcd/docker-compose.yml"
-    $_BASH_COMPLETION_FILE = f"{os.environ['HOME']}/.tcd/torizon-dev-completion.bash"
-    $APOLLOX_REPO = "torizon/vscode-torizon-templates"
-    $APOLLOX_BRANCH = "dev"
-    $BRANCH = "dev"
-    $UUID = $(id -u)
-    $DGID = $(getent group docker | cut -d: -f3)
+    $__TCD_COMPOSE_FILE = f"{os.environ['HOME']}/.tcd/docker-compose.yml"
+    $__TCD_BASH_COMPLETION_FILE = f"{os.environ['HOME']}/.tcd/torizon-dev-completion.bash"
+    $__TCD_APOLLOX_REPO = "torizon/vscode-torizon-templates"
+    $__TCD_APOLLOX_BRANCH = "dev"
+    $__TCD_BRANCH = "dev"
+    $__TCD_UUID = $(id -u)
+    $__TCD_DGID = $(getent group docker | cut -d: -f3)
 
     myhash = $(echo -n @(os.getcwd()) | openssl dgst -sha256 | sed 's/^.* //').strip()
     $SHA_DIR = myhash
@@ -485,16 +485,16 @@ def __torizon_dev(args):
         print("Please wait ...")
 
         docker compose \
-            -f $_COMPOSE_FILE \
+            -f $__TCD_COMPOSE_FILE \
             run \
             --entrypoint /bin/bash \
             --name @(f"torizon-dev-{myhash}") \
             --user root \
             -d torizon-dev > /dev/null
 
-        docker exec -it --user root @(f"torizon-dev-{myhash}") usermod -u $UUID torizon
-        docker exec -it --user root @(f"torizon-dev-{myhash}") groupadd -g $DGID docker
-        docker exec -it --user root @(f"torizon-dev-{myhash}") usermod -aG $DGID torizon
+        docker exec -it --user root @(f"torizon-dev-{myhash}") usermod -u $__TCD_UUID torizon
+        docker exec -it --user root @(f"torizon-dev-{myhash}") groupadd -g $__TCD_DGID docker
+        docker exec -it --user root @(f"torizon-dev-{myhash}") usermod -aG $__TCD_DGID torizon
         docker exec -it --user root @(f"torizon-dev-{myhash}") chown -R torizon:torizon /home/torizon
 
     docker exec -it --user torizon @(f"torizon-dev-{myhash}") zygote @(args)
@@ -737,9 +737,11 @@ $PL_EXTRA_SEC = {
 }
 
 # dark theme
-# $XONSH_STYLE_OVERRIDES['completion-menu'] = 'bg:#282828 #7b7b7b'
+$XONSH_STYLE_OVERRIDES['bottom-toolbar'] = 'noreverse'
+$XONSH_STYLE_OVERRIDES['completion-menu'] = 'bg:#3e3e3e #2FD800'
+$XONSH_STYLE_OVERRIDES['completion-menu.completion.current'] = 'fg:#2FD800 bg:#0D0D0D reverse'
 # light theme
-$XONSH_STYLE_OVERRIDES['completion-menu'] = 'bg:#2a2a2a #a76cc9'
+# $XONSH_STYLE_OVERRIDES['completion-menu'] = 'bg:#2a2a2a #a76cc9'
 
 
 $PL_PROMPT='git_signing_key>cpu_usage\nos>cwd>branch>git_hash>git_summary>diff_count\nerror>user'
