@@ -66,6 +66,11 @@ _THEME_VARIANT = "dark"
 
 _USER_HOME = os.path.expanduser("~")
 
+###
+## random aliases
+###
+aliases['neofetch'] = 'fastfetch'
+
 ##
 # code insiders
 ##
@@ -737,11 +742,14 @@ $PL_EXTRA_SEC = {
 }
 
 # dark theme
-$XONSH_STYLE_OVERRIDES['bottom-toolbar'] = 'noreverse'
-$XONSH_STYLE_OVERRIDES['completion-menu'] = 'bg:#3e3e3e #2FD800'
-$XONSH_STYLE_OVERRIDES['completion-menu.completion.current'] = 'fg:#2FD800 bg:#0D0D0D reverse'
-# light theme
-# $XONSH_STYLE_OVERRIDES['completion-menu'] = 'bg:#2a2a2a #a76cc9'
+if _THEME_VARIANT == "dark":
+    $XONSH_STYLE_OVERRIDES['bottom-toolbar'] = 'noreverse'
+    $XONSH_STYLE_OVERRIDES['completion-menu'] = 'bg:#3e3e3e #2FD800'
+    $XONSH_STYLE_OVERRIDES['completion-menu.completion.current'] = 'fg:#2FD800 bg:#0D0D0D reverse'
+else:
+    $XONSH_STYLE_OVERRIDES['bottom-toolbar'] = 'noreverse'
+    $XONSH_STYLE_OVERRIDES['completion-menu'] = 'bg:#DBDBDB #7600F5'
+    $XONSH_STYLE_OVERRIDES['completion-menu.completion.current'] = 'fg:#0078ce bg:#1FF703 reverse'
 
 
 $PL_PROMPT='git_signing_key>cpu_usage\nos>cwd>branch>git_hash>git_summary>diff_count\nerror>user'
