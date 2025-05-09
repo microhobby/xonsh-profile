@@ -686,9 +686,9 @@ if "WSL_DISTRO_NAME" in os.environ:
 
 $PL_EXTRA_SEC = {
     "user": lambda: [
-                    f"   {____username} ",
-                    "#ffffff",
-                    "#4e006d"
+                    f"   {____username} ",
+                    "#000000",
+                    "#e04743"
                 ],
     "git_summary": lambda: [
                     f" 󰜛 {_git_summary()} ",
