@@ -280,6 +280,10 @@ aliases['C'] = 'clear'
 aliases['ls'] = 'ls -lah --color=auto -v'
 aliases['l'] = '/usr/bin/ls --color=auto -v'
 
+# docker commands
+aliases['dc'] = 'docker'
+aliases['pica'] = 'docker'
+
 # interop workaround for explorer
 def __explorer(args):
     if "WSL_DISTRO_NAME" in os.environ:
@@ -744,8 +748,8 @@ $PL_EXTRA_SEC = {
 # dark theme
 if _THEME_VARIANT == "dark":
     $XONSH_STYLE_OVERRIDES['bottom-toolbar'] = 'noreverse'
-    $XONSH_STYLE_OVERRIDES['completion-menu'] = 'bg:#3e3e3e #2FD800'
-    $XONSH_STYLE_OVERRIDES['completion-menu.completion.current'] = 'fg:#2FD800 bg:#0D0D0D reverse'
+    $XONSH_STYLE_OVERRIDES['completion-menu'] = 'bg:#d4d4d4 #0D0D0D'
+    $XONSH_STYLE_OVERRIDES['completion-menu.completion.current'] = 'fg:#757575 bg:#ffab00 reverse'
 else:
     $XONSH_STYLE_OVERRIDES['bottom-toolbar'] = 'noreverse'
     $XONSH_STYLE_OVERRIDES['completion-menu'] = 'bg:#DBDBDB #7600F5'
