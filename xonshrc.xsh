@@ -749,7 +749,7 @@ $PL_EXTRA_SEC = {
 if _THEME_VARIANT == "dark":
     $XONSH_STYLE_OVERRIDES['bottom-toolbar'] = 'noreverse'
     $XONSH_STYLE_OVERRIDES['completion-menu'] = 'bg:#d4d4d4 #0D0D0D'
-    $XONSH_STYLE_OVERRIDES['completion-menu.completion.current'] = 'fg:#757575 bg:#ffab00 reverse'
+    $XONSH_STYLE_OVERRIDES['completion-menu.completion.current'] = 'fg:#333333 bg:#00db26 reverse'
 else:
     $XONSH_STYLE_OVERRIDES['bottom-toolbar'] = 'noreverse'
     $XONSH_STYLE_OVERRIDES['completion-menu'] = 'bg:#DBDBDB #7600F5'
