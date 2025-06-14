@@ -651,6 +651,7 @@ aliases['vscode-git-fixups'] = __vscode_git_fixups
 
 $_ORIGINAL_PATH = $PATH[:]
 [$PATH.remove(path) for path in $PATH.paths if path.startswith("/mnt/c/")]
+[$PATH.remove(path) for path in $PATH.paths if path.startswith("/mnt/d/")]
 
 # WARN: this only make sense for WSL
 # vs code
@@ -764,4 +765,4 @@ $PL_RPROMPT='!'
 xontrib load powerline2
 
 # -------------------------------------------------------------------- powerline
-$PATH.insert(0, f"/home/{os.environ['HOME']}/.local/bin")
+$PATH.insert(0, f"{os.environ['HOME']}/.local/bin")
