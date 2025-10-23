@@ -334,7 +334,7 @@ def __copy_to_droplet(args):
 aliases['copy-to-droplet'] = __copy_to_droplet
 
 def __connect_to_aws():
-    ssh -i @(f"{_USER_HOME}/.ssh/telemetryKeys.pem") "ubuntu@$AWS_SERVER"
+    ssh -i @(f"{_USER_HOME}/.ssh/telemetryKeys.pem") @(f"ubuntu@{os.environ['AWS_SERVER']}")
 
 aliases['connect-to-aws'] = __connect_to_aws
 
@@ -749,8 +749,8 @@ $PL_EXTRA_SEC = {
 # dark theme
 if _THEME_VARIANT == "dark":
     $XONSH_STYLE_OVERRIDES['bottom-toolbar'] = 'noreverse'
-    $XONSH_STYLE_OVERRIDES['completion-menu'] = 'bg:#d4d4d4 #0D0D0D'
-    $XONSH_STYLE_OVERRIDES['completion-menu.completion.current'] = 'fg:#333333 bg:#00db26 reverse'
+    $XONSH_STYLE_OVERRIDES['completion-menu'] = 'bg:#252525 #bababa'
+    $XONSH_STYLE_OVERRIDES['completion-menu.completion.current'] = 'fg:#18a300 bg:#252525 reverse bold'
 else:
     $XONSH_STYLE_OVERRIDES['bottom-toolbar'] = 'noreverse'
     $XONSH_STYLE_OVERRIDES['completion-menu'] = 'bg:#DBDBDB #7600F5'
