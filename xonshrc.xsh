@@ -47,6 +47,7 @@ ERROR_EMOJI = [
 os.environ["CASTELLO_SERVER"] = "192.168.0.52"
 os.environ["DROPLET_IP"] = "143.198.182.128"
 os.environ["AWS_SERVER"] = "ec2-3-133-114-116.us-east-2.compute.amazonaws.com"
+os.environ["MAGALU_SERVER"] = "201.54.1.61"
 os.environ["HOSTNAME"] = socket.gethostname()
 
 
@@ -345,6 +346,22 @@ def __copy_from_aws(args):
 
 aliases['copy-from-aws'] = __copy_from_aws
 
+def __connect_to_magalu():
+    ssh @(f"debian@{os.environ['MAGALU_SERVER']}")
+
+def __copy_to_magalu(args):
+    args = f'{" ".join(args)}'
+    cmd = f'scp -r {args} debian@{os.environ["MAGALU_SERVER"]}:/home/debian'
+    $(bash -c @(cmd))
+
+def __copy_from_magalu(args):
+    args = f'{" ".join(args)}'
+    cmd = f'scp debian@{os.environ["MAGALU_SERVER"]}:/home/debian/{args} .'
+    $(bash -c @(cmd))
+
+aliases['connect-to-magalu'] = __connect_to_magalu
+aliases['copy-to-magalu'] = __copy_to_magalu
+aliases['copy-from-magalu'] = __copy_from_magalu
 
 def __recur_registry_search(namespace, results=None, next_page=-1):
     if results is None:
