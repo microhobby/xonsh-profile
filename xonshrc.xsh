@@ -679,9 +679,10 @@ if "WSL_DISTRO_NAME" in os.environ:
 
 # explorer
 if "WSL_DISTRO_NAME" in os.environ:
-    ____programto = "/mnt/c/Windows/explorer.exe"
-    ____programto_dir = $(dirname @(____programto))
-    $PATH.insert(0, ____programto_dir)
+    if not os.path.exists("/usr/local/bin/explorer.exe"):
+        print("Creating symlink for explorer.exe")
+        print("You need to run this as administrator")
+        $(sudo ln -s /mnt/c/Windows/System32/explorer.exe /usr/local/bin/explorer.exe)
 
 # cmd.exe
 if "WSL_DISTRO_NAME" in os.environ:
@@ -692,15 +693,17 @@ if "WSL_DISTRO_NAME" in os.environ:
 
 # ipconfig.exe
 if "WSL_DISTRO_NAME" in os.environ:
-    ____programto = "/mnt/c/Windows/System32/ipconfig.exe"
-    ____programto_dir = $(dirname @(____programto))
-    $PATH.insert(0, ____programto_dir)
+    if not os.path.exists("/usr/local/bin/ipconfig.exe"):
+        print("Creating symlink for ipconfig.exe")
+        print("You need to run this as administrator")
+        $(sudo ln -s /mnt/c/Windows/System32/ipconfig.exe /usr/local/bin/ipconfig.exe)
 
 # powershell.exe
 if "WSL_DISTRO_NAME" in os.environ:
-    ____programto = "/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe"
-    ____programto_dir = $(dirname @(____programto))
-    $PATH.insert(0, ____programto_dir)
+    if not os.path.exists("/usr/local/bin/powershell.exe"):
+        print("Creating symlink for powershell.exe")
+        print("You need to run this as administrator")
+        $(sudo ln -s /mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe /usr/local/bin/powershell.exe)
 
 # -------------------------------------------------------------------- path
 
